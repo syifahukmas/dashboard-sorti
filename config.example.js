@@ -1,0 +1,3 @@
+const CONFIG = {
+    SCRIPT_URL: "ISI_URL_GOOGLE_SCRIPT_DISINI"
+};

@@ -1,0 +1,360 @@
+<script>if (!sessionStorage.getItem('isLoggedIn')) { window.location.href = 'login.html'; }</script>
+
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Update Data Operasi</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="config.js"></script>
+
+    <style>
+        body { font-family: 'Poppins', sans-serif; background: #eef2f7; padding: 20px; display: flex; flex-direction: column; align-items: center; min-height: 100vh; margin: 0; }
+        .main-wrapper { width: 100%; max-width: 1200px; }
+
+        .form-container { background: white; padding: 30px; border-radius: 15px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); position: relative; margin-bottom: 40px; max-width: 800px; margin-left: auto; margin-right: auto; }
+        
+        .tab-group { display: flex; background: #f1f2f6; border-radius: 10px; padding: 5px; margin-bottom: 25px; }
+        .tab-btn { flex: 1; border: none; padding: 12px; border-radius: 8px; font-weight: 700; cursor: pointer; transition: 0.3s; color: #7f8c8d; background: transparent; font-family: inherit; font-size: 0.9rem; }
+        .tab-btn.active { background: white; color: #2c3e50; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        .tab-btn i { margin-right: 5px; }
+        
+        .hidden { display: none !important; }
+
+        h2 { text-align: center; color: #2c3e50; margin-bottom: 20px; font-size: 1.5rem; }
+        .form-group { margin-bottom: 15px; }
+        label { display: block; font-weight: 600; font-size: 0.85rem; color: #555; margin-bottom: 5px; }
+        input, select { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; font-family: inherit; transition: all 0.3s; }
+        input:focus, select:focus { border-color: #3498db; outline: none; box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1); }
+        
+        .btn-submit { width: 100%; padding: 14px; background: #2c3e50; color: white; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; transition: 0.3s; margin-top: 10px; }
+        .btn-submit:hover { background: #34495e; transform: translateY(-2px); }
+        .btn-rain { background: #00bcd4; } 
+        .btn-rain:hover { background: #0097a7; }
+
+        .btn-back { display: block; text-align: center; margin-top: 20px; text-decoration: none; color: #c0392b; font-size: 0.9rem; font-weight: 600; border: 1px solid #c0392b; padding: 10px; border-radius: 8px; transition: 0.3s; }
+        .btn-back:hover { background: #c0392b; color: white; }
+        
+        #loadingOverlay { position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(255,255,255,0.9); display: flex; flex-direction: column; justify-content: center; align-items: center; border-radius: 15px; z-index: 10; display: none; }
+        .spinner { border: 4px solid #f3f3f3; border-top: 4px solid #3498db; border-radius: 50%; width: 30px; height: 30px; animation: spin 1s linear infinite; margin-bottom: 10px; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        .section-title { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; color: #aaa; margin: 20px 0 10px 0; border-bottom: 1px solid #eee; padding-bottom: 5px; }
+
+        .history-section { display: flex; flex-direction: column; gap: 30px; margin-bottom: 50px; }
+        .history-card { background: white; padding: 0; border-radius: 15px; box-shadow: 0 5px 20px rgba(0,0,0,0.05); overflow: hidden; }
+        .history-header { padding: 15px 20px; color: white; font-weight: 700; display: flex; justify-content: space-between; align-items: center; }
+        .bg-aceh { background: linear-gradient(135deg, #e67e22, #d35400); }
+        .bg-sumut { background: linear-gradient(135deg, #3498db, #2980b9); }
+        .bg-sumbar { background: linear-gradient(135deg, #2ecc71, #27ae60); }
+
+        .history-content { display: flex; flex-wrap: wrap; gap: 0; }
+        .table-wrapper { flex: 1.5; min-width: 400px; border-right: 1px solid #eee; }
+        .table-responsive { overflow-x: auto; max-height: 400px; position: relative; }
+        .chart-wrapper { flex: 1; min-width: 300px; padding: 15px; display: flex; align-items: center; justify-content: center; background-color: #fcfcfc; }
+        .chart-container { width: 100%; height: 300px; position: relative; }
+
+        table { width: 100%; border-collapse: collapse; font-size: 0.8rem; }
+        th { position: sticky; top: 0; z-index: 20; background: #f8f9fa; color: #7f8c8d; font-weight: 600; text-align: left; padding: 12px 15px; border-bottom: 2px solid #ddd; white-space: nowrap; box-shadow: 0 2px 2px -1px rgba(0, 0, 0, 0.1); }
+        td { padding: 10px 15px; border-bottom: 1px solid #eee; color: #333; vertical-align: middle; white-space: nowrap; background: white; }
+        .row-total td { position: sticky; bottom: 0; z-index: 20; background-color: #e3f2fd !important; font-weight: 800; border-top: 2px solid #3498db; color: #2c3e50; box-shadow: 0 -2px 5px rgba(0,0,0,0.1); }
+        .empty-row { text-align: center; color: #999; padding: 20px; font-style: italic; }
+        .date-cell { font-size: 0.75rem; color: #777; }
+        .time-cell { font-weight: 700; color: #2c3e50; font-size: 0.85rem; display: inline-block; margin-left: 5px; background: #eef2f7; padding: 2px 6px; border-radius: 4px; }
+        .pesawat-detail { font-weight: 600; color: #2c3e50; }
+
+        @media (max-width: 900px) {
+            .history-content { flex-direction: column; }
+            .table-wrapper { border-right: none; border-bottom: 1px solid #eee; }
+            .chart-wrapper { height: auto; padding: 20px 10px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="main-wrapper">
+        <div class="form-container">
+            <div id="loadingOverlay"><div class="spinner"></div><span id="loadingText">Menyimpan...</span></div>
+            
+            <div class="tab-group">
+                <button class="tab-btn active" onclick="switchTab('flight')"><i class="fa-solid fa-plane"></i> Data Pesawat</button>
+                <button class="tab-btn" onclick="switchTab('rain')"><i class="fa-solid fa-cloud-showers-heavy"></i> Data Hujan</button>
+            </div>
+
+            <div id="sectionFlight">
+                <form id="formInput">
+                    <div class="form-group"><label>1. Pilih Wilayah</label><select id="pilihProvinsi" required><option value="" disabled selected>-- Pilih --</option><option value="Aceh">Aceh</option><option value="Sumut">Sumatera Utara</option><option value="Sumbar">Sumatera Barat</option></select></div>
+                    <div class="form-group"><label>2. Pilih Armada</label><select id="pesawat" required disabled style="background:#f9f9f9;"></select></div>
+                    <div class="form-group"><label>Daerah Target</label><input type="text" id="target" placeholder="Contoh: DAS Citarum"></div>
+                    
+                    <div class="section-title">Data Harian</div>
+                    <div class="form-group"><label>Sortie (Ke-berapa)</label><input type="number" id="sortie" value="0" min="0"></div>
+                    <div style="display: flex; gap: 15px;">
+                        <div class="form-group" style="flex:1"><label>NaCl (Kg)</label><input type="number" id="nacl" value="0" min="0"></div>
+                        <div class="form-group" style="flex:1"><label>CaO (Kg)</label><input type="number" id="cao" value="0" min="0"></div>
+                    </div>
+
+                    <button type="submit" class="btn-submit">SIMPAN DATA PESAWAT</button>
+                </form>
+            </div>
+
+            <div id="sectionRain" class="hidden">
+                <form id="formHujan">
+                    <div class="form-group">
+                        <label>Pilih Provinsi</label>
+                        <select id="provinsiHujan" required>
+                            <option value="" disabled selected>-- Pilih --</option>
+                            <option value="Aceh">Aceh</option>
+                            <option value="Sumut">Sumatera Utara</option>
+                            <option value="Sumbar">Sumatera Barat</option>
+                        </select>
+                    </div>
+
+                    <div style="display: flex; gap: 10px;">
+                        <div class="form-group" style="flex:1">
+                            <label>Prediksi IFS (mm)</label>
+                            <input type="number" id="hujan_ifs" step="0.1" required>
+                        </div>
+                        <div class="form-group" style="flex:1">
+                            <label>Penakar (mm)</label>
+                            <input type="number" id="hujan_penakar" step="0.1" required>
+                        </div>
+                        <div class="form-group" style="flex:1">
+                            <label>GSMap (mm)</label>
+                            <input type="number" id="hujan_gsmap" step="0.1" required>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn-submit btn-rain">SIMPAN DATA HUJAN</button>
+                </form>
+            </div>
+
+            <a href="#" onclick="keluarDanHapusSesi()" class="btn-back">← Kembali & Logout</a>
+        </div>
+
+        <div id="flightHistoryArea" class="history-section">
+            <div style="text-align:center; color:#7f8c8d; margin-bottom:-10px; font-size:0.9rem; font-weight:600;">
+                <i class="fa-solid fa-chart-simple"></i> Riwayat & Statistik Pesawat
+            </div>
+            <div class="history-card"><div class="history-header bg-aceh"><span>Aceh</span> <i class="fa-solid fa-location-dot"></i></div><div class="history-content"><div class="table-wrapper"><div class="table-responsive"><table><thead><tr><th>Pesawat</th><th>Sortie</th><th>NaCl</th><th>CaO</th><th>Waktu</th></tr></thead><tbody id="bodyAceh"><tr><td colspan="5" class="empty-row">Memuat...</td></tr></tbody></table></div></div><div class="chart-wrapper"><div class="chart-container"><canvas id="chartAceh"></canvas></div></div></div></div>
+            <div class="history-card"><div class="history-header bg-sumut"><span>Sumatera Utara</span> <i class="fa-solid fa-location-dot"></i></div><div class="history-content"><div class="table-wrapper"><div class="table-responsive"><table><thead><tr><th>Pesawat</th><th>Sortie</th><th>NaCl</th><th>CaO</th><th>Waktu</th></tr></thead><tbody id="bodySumut"><tr><td colspan="5" class="empty-row">Memuat...</td></tr></tbody></table></div></div><div class="chart-wrapper"><div class="chart-container"><canvas id="chartSumut"></canvas></div></div></div></div>
+            <div class="history-card"><div class="history-header bg-sumbar"><span>Sumatera Barat</span> <i class="fa-solid fa-location-dot"></i></div><div class="history-content"><div class="table-wrapper"><div class="table-responsive"><table><thead><tr><th>Pesawat</th><th>Sortie</th><th>NaCl</th><th>CaO</th><th>Waktu</th></tr></thead><tbody id="bodySumbar"><tr><td colspan="5" class="empty-row">Memuat...</td></tr></tbody></table></div></div><div class="chart-wrapper"><div class="chart-container"><canvas id="chartSumbar"></canvas></div></div></div></div>
+        </div>
+    </div>
+
+    <script>
+        const SCRIPT_URL = CONFIG.SCRIPT_URL; // Pastikan config.js ada
+        const dataArmada = {
+            "Sumut": [{kode:"A1",nama:"PK-DPI"}, {kode:"A2",nama:"PK-SCJ"}, {kode:"A3",nama:"PK-YNA"}],
+            "Sumbar": [{kode:"B1",nama:"PK-DPI"}, {kode:"B2",nama:"PK-SNK"}, {kode:"B3",nama:"PK-AKR"}],
+            "Aceh": [{kode:"C1",nama:"PK-SNP"}, {kode:"C2",nama:"PK-DPI"}, {kode:"C3",nama:"PK-SNK"}]
+        };
+
+        const overlay = document.getElementById('loadingOverlay');
+        const selectProvinsi = document.getElementById('pilihProvinsi');
+        const selectPesawat = document.getElementById('pesawat');
+        let databasePenerbangan = [];
+        let charts = { Aceh: null, Sumut: null, Sumbar: null };
+
+        window.onload = async function() {
+            try {
+                const response = await fetch(SCRIPT_URL);
+                databasePenerbangan = await response.json(); 
+                overlay.style.display = 'none';
+                loadHistoryTable();
+            } catch (error) { overlay.style.display = 'none'; console.log("Gagal Load Data Awal"); }
+        };
+
+        function switchTab(tab) {
+            const btns = document.querySelectorAll('.tab-btn');
+            btns.forEach(b => b.classList.remove('active'));
+            const flightSec = document.getElementById('sectionFlight');
+            const rainSec = document.getElementById('sectionRain');
+            const historySec = document.getElementById('flightHistoryArea');
+
+            if(tab === 'flight') {
+                btns[0].classList.add('active');
+                flightSec.classList.remove('hidden');
+                rainSec.classList.add('hidden');
+                historySec.classList.remove('hidden');
+            } else {
+                btns[1].classList.add('active');
+                flightSec.classList.add('hidden');
+                rainSec.classList.remove('hidden');
+                historySec.classList.add('hidden');
+            }
+        }
+
+        function cariDetailPesawat(kodeDicari) {
+            for (const [provinsi, list] of Object.entries(dataArmada)) {
+                const ketemu = list.find(item => item.kode === kodeDicari);
+                if (ketemu) return { provinsi: provinsi, nama: ketemu.nama };
+            }
+            return { provinsi: "-", nama: "-" };
+        }
+
+        function formatTanggalIndo(stringTanggal) {
+            if(!stringTanggal) return "-";
+            const dateObj = new Date(stringTanggal);
+            if (isNaN(dateObj.getTime())) return stringTanggal;
+            const tgl = dateObj.getDate(); const bln = dateObj.getMonth(); const thn = dateObj.getFullYear();
+            const jam = String(dateObj.getHours()).padStart(2, '0'); const menit = String(dateObj.getMinutes()).padStart(2, '0');
+            const namaBulan = ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Agu", "Sep", "Okt", "Nov", "Des"];
+            return `<span class="date-cell">${tgl} ${namaBulan[bln]} ${thn},</span> <span class="time-cell">${jam}:${menit}</span>`;
+        }
+
+        function updateChart(region, canvasId, stats) {
+            const ctx = document.getElementById(canvasId).getContext('2d');
+            if (charts[region]) charts[region].destroy();
+            const labels = Object.keys(stats);
+            const dataNaCl = labels.map(k => stats[k].nacl);
+            const dataCaO = labels.map(k => stats[k].cao);
+            const dataSortie = labels.map(k => stats[k].sortie);
+
+            charts[region] = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        { label: 'NaCl (Kg)', data: dataNaCl, backgroundColor: 'rgba(52, 152, 219, 0.7)', yAxisID: 'y' },
+                        { label: 'CaO (Kg)', data: dataCaO, backgroundColor: 'rgba(241, 196, 15, 0.7)', yAxisID: 'y' },
+                        { label: 'Sortie', data: dataSortie, type: 'line', borderColor: '#e74c3c', borderWidth: 2, pointBackgroundColor: '#e74c3c', yAxisID: 'y1' }
+                    ]
+                },
+                options: {
+                    responsive: true, maintainAspectRatio: false,
+                    interaction: { mode: 'index', intersect: false },
+                    plugins: { legend: { position: 'bottom', labels: { boxWidth: 10, font: { size: 10 } } } },
+                    scales: {
+                        y: { type: 'linear', display: true, position: 'left', beginAtZero: true },
+                        y1: { type: 'linear', display: true, position: 'right', beginAtZero: true, grid: { drawOnChartArea: false }, ticks: { stepSize: 1 } }
+                    }
+                }
+            });
+        }
+
+        function loadHistoryTable() {
+            const bodyAceh = document.getElementById('bodyAceh');
+            const bodySumut = document.getElementById('bodySumut');
+            const bodySumbar = document.getElementById('bodySumbar');
+            
+            fetch(SCRIPT_URL + "?mode=history")
+            .then(res => res.json())
+            .then(data => {
+                bodyAceh.innerHTML = ""; bodySumut.innerHTML = ""; bodySumbar.innerHTML = "";
+                let tSortieAceh=0, tNaClAceh=0, tCaOAceh=0, cAceh=0;
+                let tSortieSumut=0, tNaClSumut=0, tCaOSumut=0, cSumut=0;
+                let tSortieSumbar=0, tNaClSumbar=0, tCaOSumbar=0, cSumbar=0;
+                let statsAceh = {}, statsSumut = {}, statsSumbar = {};
+
+                if (data.length === 0) {
+                    const empty = "<tr><td colspan='5' class='empty-row'>Belum ada data</td></tr>";
+                    bodyAceh.innerHTML = empty; bodySumut.innerHTML = empty; bodySumbar.innerHTML = empty;
+                    return;
+                }
+
+                data.forEach(row => {
+                    const info = cariDetailPesawat(row.kode);
+                    const valSortie = parseInt(row.sortie) || 0; 
+                    const sortieCount = valSortie > 0 ? 1 : 0; 
+                    const valNaCl = parseInt(row.nacl) || 0;
+                    const valCaO = parseInt(row.cao) || 0;
+                    const niceDate = formatTanggalIndo(row.tanggal);
+
+                    const htmlRow = `<tr><td class="pesawat-detail">${info.nama}</td><td style="font-weight:bold">${valSortie}</td><td>${valNaCl.toLocaleString()}</td><td>${valCaO.toLocaleString()}</td><td>${niceDate}</td></tr>`;
+
+                    function addStats(obj, name, s, n, c) {
+                        if(!obj[name]) obj[name] = {sortie:0, nacl:0, cao:0};
+                        obj[name].sortie += s; obj[name].nacl += n; obj[name].cao += c;
+                    }
+
+                    if (row.kode.startsWith('C')) { bodyAceh.innerHTML += htmlRow; tSortieAceh += valSortie; tNaClAceh += valNaCl; tCaOAceh += valCaO; cAceh++; addStats(statsAceh, info.nama, valSortie, valNaCl, valCaO); }
+                    else if (row.kode.startsWith('A')) { bodySumut.innerHTML += htmlRow; tSortieSumut += valSortie; tNaClSumut += valNaCl; tCaOSumut += valCaO; cSumut++; addStats(statsSumut, info.nama, valSortie, valNaCl, valCaO); }
+                    else if (row.kode.startsWith('B')) { bodySumbar.innerHTML += htmlRow; tSortieSumbar += valSortie; tNaClSumbar += valNaCl; tCaOSumbar += valCaO; cSumbar++; addStats(statsSumbar, info.nama, valSortie, valNaCl, valCaO); }
+                });
+
+                function createTotalRow(s, n, c) { return `<tr class="row-total"><td>TOTAL</td><td>${s}</td><td>${n.toLocaleString()}</td><td>${c.toLocaleString()}</td><td>-</td></tr>`; }
+
+                if(cAceh > 0) bodyAceh.innerHTML += createTotalRow(tSortieAceh, tNaClAceh, tCaOAceh); else bodyAceh.innerHTML = "<tr><td colspan='5' class='empty-row'>Belum ada data Aceh</td></tr>";
+                if(cSumut > 0) bodySumut.innerHTML += createTotalRow(tSortieSumut, tNaClSumut, tCaOSumut); else bodySumut.innerHTML = "<tr><td colspan='5' class='empty-row'>Belum ada data Sumut</td></tr>";
+                if(cSumbar > 0) bodySumbar.innerHTML += createTotalRow(tSortieSumbar, tNaClSumbar, tCaOSumbar); else bodySumbar.innerHTML = "<tr><td colspan='5' class='empty-row'>Belum ada data Sumbar</td></tr>";
+
+                updateChart("Aceh", "chartAceh", statsAceh);
+                updateChart("Sumut", "chartSumut", statsSumut);
+                updateChart("Sumbar", "chartSumbar", statsSumbar);
+            })
+            .catch(e => { console.log(e); });
+        }
+
+        selectProvinsi.addEventListener('change', function() {
+            const daftar = dataArmada[this.value];
+            selectPesawat.innerHTML = '<option value="" disabled selected>-- Pilih --</option>';
+            selectPesawat.disabled = false; selectPesawat.style.backgroundColor = "white";
+            if(daftar) daftar.forEach(p => { let opt = document.createElement('option'); opt.value = p.kode; opt.text = p.nama; selectPesawat.appendChild(opt); });
+        });
+
+        selectPesawat.addEventListener('change', function() {
+            const data = databasePenerbangan.flights ? databasePenerbangan.flights.find(item => item.kode === this.value) : null;
+            if (data) document.getElementById('target').value = data.target === "-" ? "" : data.target;
+            document.getElementById('sortie').value = 0; document.getElementById('nacl').value = 0; document.getElementById('cao').value = 0;
+        });
+
+        document.getElementById('formInput').addEventListener('submit', function(e) {
+            e.preventDefault();
+            overlay.style.display = 'flex';
+            document.getElementById('loadingText').innerText = "Menyimpan Data Pesawat...";
+            
+            const dataObj = {
+                kode: document.getElementById('pesawat').value,
+                target: document.getElementById('target').value,
+                sortie: document.getElementById('sortie').value, 
+                nacl: document.getElementById('nacl').value, 
+                cao: document.getElementById('cao').value    
+            };
+            fetch(SCRIPT_URL, { method: "POST", body: JSON.stringify(dataObj) })
+            .then(r => r.json()).then(res => {
+                alert("Data Tersimpan!"); overlay.style.display = 'none'; loadHistoryTable();
+                document.getElementById('sortie').value = 0; document.getElementById('nacl').value = 0; document.getElementById('cao').value = 0;
+                document.getElementById('target').value = ""; selectPesawat.innerHTML = ""; selectPesawat.disabled = true; selectPesawat.style.backgroundColor = "#f9f9f9"; document.getElementById('pilihProvinsi').value = "";
+            }).catch(e => { alert("Error"); overlay.style.display = 'none'; });
+        });
+
+        // --- SUBMIT FORM HUJAN (BARU) ---
+        document.getElementById('formHujan').addEventListener('submit', function(e) {
+            e.preventDefault();
+            overlay.style.display = 'flex';
+            document.getElementById('loadingText').innerText = "Menyimpan Data Hujan...";
+
+            const data = {
+                action: "input_hujan",
+                provinsi: document.getElementById('provinsiHujan').value,
+                ifs: document.getElementById('hujan_ifs').value,         // Data 1
+                penakar: document.getElementById('hujan_penakar').value, // Data 2
+                gsmap: document.getElementById('hujan_gsmap').value,     // Data 3
+                // keterangan: document.getElementById('keterangan').value
+            };
+
+            fetch(SCRIPT_URL, { method: "POST", body: JSON.stringify(data) })
+            .then(r => r.json()).then(res => {
+                alert("Data Hujan Tersimpan!");
+                overlay.style.display = 'none';
+                document.getElementById('provinsiHujan').value = "";
+                document.getElementById('hujan_ifs').value = "";
+                document.getElementById('hujan_penakar').value = "";
+                document.getElementById('hujan_gsmap').value = "";
+                // document.getElementById('keterangan').value = "";
+            })
+            .catch(e => { alert("Gagal!"); overlay.style.display = 'none'; });
+        });
+
+        function keluarDanHapusSesi() {
+            sessionStorage.removeItem('isLoggedIn');
+            window.location.href = 'index.html';
+        }
+    </script>
+</body>
+</html>

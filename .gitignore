@@ -1,0 +1,6 @@
+# Abaikan file konfigurasi rahasia
+config.js
+
+# Abaikan file sistem/sampah (opsional)
+.DS_Store
+Thumbs.db
