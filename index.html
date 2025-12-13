@@ -8,10 +8,9 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
-    <script src="config.js" onerror="console.log('Config.js tidak ditemukan, menggunakan Snippet Netlify')"></script>
+    <script src="config.js" onerror="console.log('Menggunakan Config Netlify')"></script>
 
     <style>
-        /* --- VARIABLE & RESET --- */
         :root {
             --primary: #2c3e50; --accent: #3498db; --success: #27ae60;
             --warning: #f39c12; --danger: #c0392b; --purple: #8e44ad; 
@@ -19,14 +18,11 @@
             --glass-strong: rgba(255, 255, 255, 0.95);
             --shadow: 0 8px 30px rgba(0,0,0,0.12);
         }
-
         body {
             font-family: 'Poppins', sans-serif;
             background: #eef2f7 url('https://images.unsplash.com/photo-1464037866556-6812c9d1c72e?auto=format&fit=crop&q=80&w=2000') no-repeat center center fixed;
             background-size: cover; margin: 0; padding: 20px; color: var(--primary);
         }
-
-        /* HEADER */
         .header {
             max-width: 1200px; margin: 0 auto 30px auto; background: var(--glass-strong);
             padding: 15px 25px; border-radius: 16px; box-shadow: var(--shadow);
@@ -41,22 +37,17 @@
         }
         .btn-update:hover { background: #34495e; transform: translateY(-2px); box-shadow: 0 5px 15px rgba(0,0,0,0.2); }
 
-        /* PROVINCE SECTION */
         .province-section { max-width: 1200px; margin: 0 auto 50px auto; }
         .location-banner { display: flex; align-items: center; gap: 10px; margin-bottom: 20px; }
         .location-pill { background: var(--glass-strong); padding: 8px 20px; border-radius: 50px; font-weight: 700; font-size: 1.1rem; color: var(--primary); box-shadow: 0 4px 10px rgba(0,0,0,0.05); display: flex; align-items: center; gap: 10px; }
         .location-pill i { color: var(--danger); }
 
-        /* SUMMARY CARDS */
-        .summary-wrapper {
-            display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px; margin-bottom: 30px;
-        }
+        .summary-wrapper { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px; margin-bottom: 30px; }
         .summary-card {
             background: var(--glass-strong); padding: 15px; border-radius: 16px; box-shadow: var(--shadow);
             position: relative; overflow: hidden; display: flex; flex-direction: column; justify-content: center; min-height: 90px;
         }
         .summary-card::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 5px; }
-
         .sum-sortie::before { background: var(--accent); } 
         .sum-nacl::before { background: var(--success); }  
         .sum-cao::before { background: var(--warning); }   
@@ -68,7 +59,12 @@
         .sum-unit { font-size: 0.8rem; font-weight: 500; color: #95a5a6; }
         .sum-date { font-size: 0.65rem; color: #2ecc71; font-weight: 600; margin-top: 5px; display: block; }
 
-        /* AIRCRAFT CARDS */
+        /* --- STYLE KHUSUS HUJAN (GRID 3) --- */
+        .rain-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 5px; text-align: center; margin-top: 5px; }
+        .rain-item { background: rgba(0, 188, 212, 0.1); padding: 5px; border-radius: 8px; }
+        .rain-lbl { font-size: 0.6rem; color: #0097a7; display: block; font-weight: 600; }
+        .rain-val { font-size: 0.9rem; font-weight: 800; color: #2c3e50; }
+
         .dashboard-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 25px; }
         .card { background: var(--glass); border-radius: 20px; overflow: hidden; box-shadow: var(--shadow); transition: transform 0.3s ease; }
         .card:hover { transform: translateY(-5px); }
@@ -92,7 +88,6 @@
         .target-box { border-top: 1px solid rgba(0,0,0,0.05); padding-top: 12px; display: flex; align-items: center; gap: 8px; color: var(--primary); font-size: 0.9rem; font-weight: 500; }
         .target-box i { color: var(--danger); }
 
-        /* MODAL POPUP */
         .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 9999; display: none; justify-content: center; align-items: center; backdrop-filter: blur(5px); }
         .modal-box { background: white; padding: 30px; border-radius: 20px; width: 90%; max-width: 320px; text-align: center; box-shadow: 0 20px 60px rgba(0,0,0,0.4); animation: popUp 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
         @keyframes popUp { from{transform: scale(0.8); opacity:0} to{transform: scale(1); opacity:1} }
@@ -111,12 +106,12 @@
 <body>
 
     <div class="header">
-        <div><h1><i class="fa-solid fa-plane-circle-check"></i> Flight Operations</h1><p>Real-time Monitoring</p></div>
+        <div><h1><i class="fa-solid fa-plane-circle-check"></i> Flight Ops</h1><p>Real-time OMC Monitoring</p></div>
         <a href="input.html" class="btn-update"><i class="fa-solid fa-pen-to-square"></i> Update Data</a>
     </div>
 
     <div class="province-section">
-        <div class="location-banner"><div class="location-pill"><i class="fa-solid fa-location-dot"></i> Provinsi Aceh</div></div>
+        <div class="location-banner"><div class="location-pill"><i class="fa-solid fa-location-dot"></i> Aceh</div></div>
         
         <div class="summary-wrapper">
             <div class="summary-card sum-sortie"><span class="sum-label">Sortie</span><div class="sum-value" id="total-sortie-aceh">0</div></div>
@@ -125,8 +120,12 @@
             <div class="summary-card sum-total"><span class="sum-label">Total Bahan</span><div><span class="sum-value" id="total-semai-aceh">0</span> <span class="sum-unit">Kg</span></div></div>
             
             <div class="summary-card sum-rain">
-                <span class="sum-label">Curah Hujan</span>
-                <div><span class="sum-value" id="rain-val-Aceh">0</span> <span class="sum-unit">mm</span></div>
+                <span class="sum-label">Curah Hujan (mm)</span>
+                <div class="rain-grid">
+                    <div class="rain-item"><span class="rain-lbl">IFS</span><span class="rain-val" id="ifs-Aceh">0</span></div>
+                    <div class="rain-item"><span class="rain-lbl">Penakar</span><span class="rain-val" id="penakar-Aceh">0</span></div>
+                    <div class="rain-item"><span class="rain-lbl">GSMap</span><span class="rain-val" id="gsmap-Aceh">0</span></div>
+                </div>
                 <span class="sum-date" id="rain-date-Aceh">-</span>
             </div>
         </div>
@@ -139,7 +138,7 @@
     </div>
 
     <div class="province-section">
-        <div class="location-banner"><div class="location-pill"><i class="fa-solid fa-location-dot"></i> Provinsi Sumatera Utara</div></div>
+        <div class="location-banner"><div class="location-pill"><i class="fa-solid fa-location-dot"></i> Sumatera Utara</div></div>
         <div class="summary-wrapper">
             <div class="summary-card sum-sortie"><span class="sum-label">Sortie</span><div class="sum-value" id="total-sortie-sumut">0</div></div>
             <div class="summary-card sum-nacl"><span class="sum-label">NaCl</span><div><span class="sum-value" id="total-nacl-sumut">0</span> <span class="sum-unit">Kg</span></div></div>
@@ -147,8 +146,12 @@
             <div class="summary-card sum-total"><span class="sum-label">Total Bahan</span><div><span class="sum-value" id="total-semai-sumut">0</span> <span class="sum-unit">Kg</span></div></div>
             
             <div class="summary-card sum-rain">
-                <span class="sum-label">Curah Hujan</span>
-                <div><span class="sum-value" id="rain-val-Sumut">0</span> <span class="sum-unit">mm</span></div>
+                <span class="sum-label">Curah Hujan (mm)</span>
+                <div class="rain-grid">
+                    <div class="rain-item"><span class="rain-lbl">IFS</span><span class="rain-val" id="ifs-Sumut">0</span></div>
+                    <div class="rain-item"><span class="rain-lbl">Penakar</span><span class="rain-val" id="penakar-Sumut">0</span></div>
+                    <div class="rain-item"><span class="rain-lbl">GSMap</span><span class="rain-val" id="gsmap-Sumut">0</span></div>
+                </div>
                 <span class="sum-date" id="rain-date-Sumut">-</span>
             </div>
         </div>
@@ -160,7 +163,7 @@
     </div>
 
     <div class="province-section">
-        <div class="location-banner"><div class="location-pill"><i class="fa-solid fa-location-dot"></i> Provinsi Sumatera Barat</div></div>
+        <div class="location-banner"><div class="location-pill"><i class="fa-solid fa-location-dot"></i> Sumatera Barat</div></div>
         <div class="summary-wrapper">
             <div class="summary-card sum-sortie"><span class="sum-label">Sortie</span><div class="sum-value" id="total-sortie-sumbar">0</div></div>
             <div class="summary-card sum-nacl"><span class="sum-label">NaCl</span><div><span class="sum-value" id="total-nacl-sumbar">0</span> <span class="sum-unit">Kg</span></div></div>
@@ -168,8 +171,12 @@
             <div class="summary-card sum-total"><span class="sum-label">Total Bahan</span><div><span class="sum-value" id="total-semai-sumbar">0</span> <span class="sum-unit">Kg</span></div></div>
             
             <div class="summary-card sum-rain">
-                <span class="sum-label">Curah Hujan</span>
-                <div><span class="sum-value" id="rain-val-Sumbar">0</span> <span class="sum-unit">mm</span></div>
+                <span class="sum-label">Curah Hujan (mm)</span>
+                <div class="rain-grid">
+                    <div class="rain-item"><span class="rain-lbl">IFS</span><span class="rain-val" id="ifs-Sumbar">0</span></div>
+                    <div class="rain-item"><span class="rain-lbl">Penakar</span><span class="rain-val" id="penakar-Sumbar">0</span></div>
+                    <div class="rain-item"><span class="rain-lbl">GSMap</span><span class="rain-val" id="gsmap-Sumbar">0</span></div>
+                </div>
                 <span class="sum-date" id="rain-date-Sumbar">-</span>
             </div>
         </div>
@@ -181,12 +188,9 @@
     </div>
 
     <script>
-        // Gunakan Config Netlify (atau config.js lokal)
         const SCRIPT_URL = (typeof CONFIG !== 'undefined') ? CONFIG.SCRIPT_URL : "URL_SCRIPT_ANDA_JIKA_CONFIG_GAGAL"; 
         
         let pesawatDipilih = "";
-
-        // Fungsi Switch Status (Modal)
         function bukaModalStatus(kode) { 
             pesawatDipilih = kode; 
             document.getElementById('modalKodePesawat').innerText = kode;
@@ -208,9 +212,7 @@
                 let response = await fetch(SCRIPT_URL);
                 let result = await response.json(); 
                 
-                // === PERBAIKAN DI SINI ===
-                // Data sekarang berbentuk { flights: [...], weather: {...} }
-                // Kita harus membongkarnya. Jika masih format lama (array), pakai fallback.
+                // Cek format (Object vs Array)
                 let flights = result.flights ? result.flights : (Array.isArray(result) ? result : []);
                 let weather = result.weather ? result.weather : {};
 
@@ -218,30 +220,32 @@
                 let sSortieSumut=0, sNaClSumut=0, sCaOSumut=0;
                 let sSortieSumbar=0, sNaClSumbar=0, sCaOSumbar=0;
 
-                // 1. ISI DATA PESAWAT
                 flights.forEach(data => {
                     let k = data.kode;
                     if(document.getElementById('target-' + k)) {
                         document.getElementById('target-'+k).innerText = data.target || "-";
-                        document.getElementById('sortie-'+k).innerText = data.sortie;
-                        document.getElementById('acc_sortie-'+k).innerText = data.acc_sortie;
-                        document.getElementById('nacl-'+k).innerText = parseInt(data.nacl).toLocaleString('id-ID');
-                        document.getElementById('acc_nacl-'+k).innerText = parseInt(data.acc_nacl).toLocaleString('id-ID');
-                        document.getElementById('cao-'+k).innerText = parseInt(data.cao).toLocaleString('id-ID');
-                        document.getElementById('acc_cao-'+k).innerText = parseInt(data.acc_cao).toLocaleString('id-ID');
+                        
+                        // ANTI ERROR: Jika data kosong/invalid, tampilkan 0
+                        document.getElementById('sortie-'+k).innerText = parseInt(data.sortie) || 0;
+                        document.getElementById('acc_sortie-'+k).innerText = parseInt(data.acc_sortie) || 0;
+                        document.getElementById('nacl-'+k).innerText = (parseInt(data.nacl) || 0).toLocaleString('id-ID');
+                        document.getElementById('acc_nacl-'+k).innerText = (parseInt(data.acc_nacl) || 0).toLocaleString('id-ID');
+                        document.getElementById('cao-'+k).innerText = (parseInt(data.cao) || 0).toLocaleString('id-ID');
+                        document.getElementById('acc_cao-'+k).innerText = (parseInt(data.acc_cao) || 0).toLocaleString('id-ID');
 
                         let badge = document.getElementById('status-'+k);
-                        badge.innerText = data.status == 'off' ? 'OFF' : data.status.toUpperCase();
-                        badge.className = 'status-badge ' + data.status;
+                        let statusRaw = data.status || 'stby';
+                        badge.innerText = statusRaw == 'off' ? 'OFF' : statusRaw.toUpperCase();
+                        badge.className = 'status-badge ' + statusRaw;
                     }
 
-                    // Hitung Total Per Provinsi
+                    // Total Per Provinsi
                     if(k.startsWith('C')) { sSortieAceh += parseInt(data.acc_sortie)||0; sNaClAceh += parseInt(data.acc_nacl)||0; sCaOAceh += parseInt(data.acc_cao)||0; }
                     if(k.startsWith('A')) { sSortieSumut += parseInt(data.acc_sortie)||0; sNaClSumut += parseInt(data.acc_nacl)||0; sCaOSumut += parseInt(data.acc_cao)||0; }
                     if(k.startsWith('B')) { sSortieSumbar += parseInt(data.acc_sortie)||0; sNaClSumbar += parseInt(data.acc_nacl)||0; sCaOSumbar += parseInt(data.acc_cao)||0; }
                 });
 
-                // 2. UPDATE KARTU SUMMARY PESAWAT
+                // Update Summary Card
                 if(document.getElementById("total-sortie-aceh")) {
                     document.getElementById("total-sortie-aceh").innerText = sSortieAceh;
                     document.getElementById("total-nacl-aceh").innerText = sNaClAceh.toLocaleString('id-ID');
@@ -261,18 +265,24 @@
                     document.getElementById("total-semai-sumbar").innerText = (sNaClSumbar + sCaOSumbar).toLocaleString('id-ID');
                 }
 
-                // 3. UPDATE KARTU CUACA (HUJAN)
+                // Update Data Hujan (3 KOLOM BARU)
                 if (weather) {
                     if (weather.Aceh) {
-                        document.getElementById('rain-val-Aceh').innerText = weather.Aceh.mm;
+                        document.getElementById('ifs-Aceh').innerText = weather.Aceh.ifs || 0;
+                        document.getElementById('penakar-Aceh').innerText = weather.Aceh.penakar || 0;
+                        document.getElementById('gsmap-Aceh').innerText = weather.Aceh.gsmap || 0;
                         document.getElementById('rain-date-Aceh').innerText = "Update: " + weather.Aceh.tgl;
                     }
                     if (weather.Sumut) {
-                        document.getElementById('rain-val-Sumut').innerText = weather.Sumut.mm;
+                        document.getElementById('ifs-Sumut').innerText = weather.Sumut.ifs || 0;
+                        document.getElementById('penakar-Sumut').innerText = weather.Sumut.penakar || 0;
+                        document.getElementById('gsmap-Sumut').innerText = weather.Sumut.gsmap || 0;
                         document.getElementById('rain-date-Sumut').innerText = "Update: " + weather.Sumut.tgl;
                     }
                     if (weather.Sumbar) {
-                        document.getElementById('rain-val-Sumbar').innerText = weather.Sumbar.mm;
+                        document.getElementById('ifs-Sumbar').innerText = weather.Sumbar.ifs || 0;
+                        document.getElementById('penakar-Sumbar').innerText = weather.Sumbar.penakar || 0;
+                        document.getElementById('gsmap-Sumbar').innerText = weather.Sumbar.gsmap || 0;
                         document.getElementById('rain-date-Sumbar').innerText = "Update: " + weather.Sumbar.tgl;
                     }
                 }
