@@ -193,19 +193,20 @@
 
                 flights.forEach(data => {
                     let k = data.kode;
-                    if(document.getElementById('target-' + k)) {
-                        document.getElementById('target-'+k).innerText = data.target || "-";
-                        document.getElementById('sortie-'+k).innerText = data.sortie;
-                        document.getElementById('acc_sortie-'+k).innerText = data.acc_sortie;
-                        document.getElementById('nacl-'+k).innerText = parseInt(data.nacl).toLocaleString('id-ID');
-                        document.getElementById('acc_nacl-'+k).innerText = parseInt(data.acc_nacl).toLocaleString('id-ID');
-                        document.getElementById('cao-'+k).innerText = parseInt(data.cao).toLocaleString('id-ID');
-                        document.getElementById('acc_cao-'+k).innerText = parseInt(data.acc_cao).toLocaleString('id-ID');
+                if(document.getElementById('target-' + k)) {
+                    document.getElementById('target-'+k).innerText = data.target || "-";
+                    document.getElementById('sortie-'+k).innerText = parseInt(data.sortie) || 0;
+                    document.getElementById('acc_sortie-'+k).innerText = parseInt(data.acc_sortie) || 0;
+                    document.getElementById('nacl-'+k).innerText = (parseInt(data.nacl) || 0).toLocaleString('id-ID');
+                    document.getElementById('acc_nacl-'+k).innerText = (parseInt(data.acc_nacl) || 0).toLocaleString('id-ID');
+                    document.getElementById('cao-'+k).innerText = (parseInt(data.cao) || 0).toLocaleString('id-ID');
+                    document.getElementById('acc_cao-'+k).innerText = (parseInt(data.acc_cao) || 0).toLocaleString('id-ID');
 
-                        let badge = document.getElementById('status-'+k);
-                        badge.innerText = data.status == 'off' ? 'OFF' : data.status.toUpperCase();
-                        badge.className = 'status-badge ' + data.status;
-                    }
+                    let badge = document.getElementById('status-'+k);
+                    let statusRaw = data.status || 'stby';
+                    badge.innerText = statusRaw == 'off' ? 'OFF' : statusRaw.toUpperCase();
+                    badge.className = 'status-badge ' + statusRaw;
+                }
 
                     if(k.startsWith('C')) { sSortieAceh += parseInt(data.acc_sortie)||0; sNaClAceh += parseInt(data.acc_nacl)||0; sCaOAceh += parseInt(data.acc_cao)||0; }
                     if(k.startsWith('A')) { sSortieSumut += parseInt(data.acc_sortie)||0; sNaClSumut += parseInt(data.acc_nacl)||0; sCaOSumut += parseInt(data.acc_cao)||0; }
