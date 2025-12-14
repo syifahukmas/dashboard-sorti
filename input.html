@@ -192,7 +192,7 @@
                     datasets: [
                         { label: 'NaCl (Kg)', data: dataNaCl, backgroundColor: 'rgba(52, 152, 219, 0.7)', yAxisID: 'y' },
                         { label: 'CaO (Kg)', data: dataCaO, backgroundColor: 'rgba(241, 196, 15, 0.7)', yAxisID: 'y' },
-                        { label: 'Sortie', data: dataSortie, type: 'line', borderColor: '#e74c3c', borderWidth: 2, pointBackgroundColor: '#e74c3c', yAxisID: 'y1' }
+                        // { label: 'Sortie', data: dataSortie, type: 'line', borderColor: '#e74c3c', borderWidth: 2, pointBackgroundColor: '#e74c3c', yAxisID: 'y1' }
                     ]
                 },
                 options: {
@@ -206,44 +206,112 @@
                 }
             });
         }
-        function loadHistoryTable() {
+function loadHistoryTable() {
             const bodyAceh = document.getElementById('bodyAceh');
             const bodySumut = document.getElementById('bodySumut');
-            const bodySumbar = document.getElementById('bodySumbar');       
+            const bodySumbar = document.getElementById('bodySumbar');
+            
             fetch(SCRIPT_URL + "?mode=history")
             .then(res => res.json())
             .then(data => {
                 bodyAceh.innerHTML = ""; bodySumut.innerHTML = ""; bodySumbar.innerHTML = "";
+                
                 let tSortieAceh=0, tNaClAceh=0, tCaOAceh=0, cAceh=0;
                 let tSortieSumut=0, tNaClSumut=0, tCaOSumut=0, cSumut=0;
                 let tSortieSumbar=0, tNaClSumbar=0, tCaOSumbar=0, cSumbar=0;
+                
                 let statsAceh = {}, statsSumut = {}, statsSumbar = {};
+
                 if (data.length === 0) {
                     const empty = "<tr><td colspan='5' class='empty-row'>Belum ada data</td></tr>";
                     bodyAceh.innerHTML = empty; bodySumut.innerHTML = empty; bodySumbar.innerHTML = empty;
                     return;
                 }
+                function bikinTampilanCantik(rawString) {
+                    if (!rawString || rawString === '-') return '-';
+
+                    let tglStr = rawString; 
+                    let jamStr = "00:00"; 
+                    if (rawString.includes(" ")) {
+                        let parts = rawString.split(" ");
+                        tglStr = parts[0]; 
+                        jamStr = parts[1]; 
+                    }
+                    if (tglStr.includes("/")) {
+                        let pecah = tglStr.split("/");
+                        if(pecah.length === 3) {
+                            let blnIdx = parseInt(pecah[1]) - 1;
+                            let listBln = ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Agu", "Sep", "Okt", "Nov", "Des"];
+                            tglStr = `${parseInt(pecah[0])} ${listBln[blnIdx]} ${pecah[2]}`;
+                        }
+                    }
+                    return `
+                        <div style="display:flex; align-items:center; gap:8px;">
+                            <span style="color:#555">${tglStr},</span>
+                            <span style="
+                                background: #eef2f7; 
+                                color: #2c3e50; 
+                                font-weight: 800; 
+                                padding: 4px 8px; 
+                                border-radius: 6px; 
+                                font-size: 0.9rem;
+                                letter-spacing: 0.5px;
+                            ">${jamStr}</span>
+                        </div>
+                    `;
+                }
                 data.forEach(row => {
                     const info = cariDetailPesawat(row.kode);
                     const valSortie = parseInt(row.sortie) || 0; 
-                    const sortieCount = valSortie > 0 ? 1 : 0; 
                     const valNaCl = parseInt(row.nacl) || 0;
                     const valCaO = parseInt(row.cao) || 0;
-                    const niceDate = formatTanggalIndo(row.tanggal);
-                    const htmlRow = `<tr><td class="pesawat-detail">${info.nama}</td><td style="font-weight:bold">${valSortie}</td><td>${valNaCl.toLocaleString()}</td><td>${valCaO.toLocaleString()}</td><td>${niceDate}</td></tr>`;
+                    
+                    // Panggil fungsi pemantik tampilan
+                    const tampilanWaktu = bikinTampilanCantik(row.tanggal);
+
+                    const htmlRow = `<tr>
+                        <td class="pesawat-detail">${info.nama}</td>
+                        <td style="font-weight:bold">${valSortie}</td>
+                        <td>${valNaCl.toLocaleString()}</td>
+                        <td>${valCaO.toLocaleString()}</td>
+                        <td>${tampilanWaktu}</td>
+                    </tr>`;
+
                     function addStats(obj, name, s, n, c) {
                         if(!obj[name]) obj[name] = {sortie:0, nacl:0, cao:0};
-                        obj[name].sortie += s; obj[name].nacl += n; obj[name].cao += c;
+                        if(s > 0) obj[name].sortie += 1; 
+                        obj[name].nacl += n; 
+                        obj[name].cao += c;
                     }
 
-                    if (row.kode.startsWith('C')) { bodyAceh.innerHTML += htmlRow; tSortieAceh += valSortie; tNaClAceh += valNaCl; tCaOAceh += valCaO; cAceh++; addStats(statsAceh, info.nama, valSortie, valNaCl, valCaO); }
-                    else if (row.kode.startsWith('A')) { bodySumut.innerHTML += htmlRow; tSortieSumut += valSortie; tNaClSumut += valNaCl; tCaOSumut += valCaO; cSumut++; addStats(statsSumut, info.nama, valSortie, valNaCl, valCaO); }
-                    else if (row.kode.startsWith('B')) { bodySumbar.innerHTML += htmlRow; tSortieSumbar += valSortie; tNaClSumbar += valNaCl; tCaOSumbar += valCaO; cSumbar++; addStats(statsSumbar, info.nama, valSortie, valNaCl, valCaO); }
+                    if (row.kode.startsWith('C')) { 
+                        bodyAceh.innerHTML += htmlRow; 
+                        if(valSortie > 0) tSortieAceh += 1; 
+                        tNaClAceh += valNaCl; tCaOAceh += valCaO; cAceh++; 
+                        addStats(statsAceh, info.nama, valSortie, valNaCl, valCaO); 
+                    }
+                    else if (row.kode.startsWith('A')) { 
+                        bodySumut.innerHTML += htmlRow; 
+                        if(valSortie > 0) tSortieSumut += 1; 
+                        tNaClSumut += valNaCl; tCaOSumut += valCaO; cSumut++; 
+                        addStats(statsSumut, info.nama, valSortie, valNaCl, valCaO); 
+                    }
+                    else if (row.kode.startsWith('B')) { 
+                        bodySumbar.innerHTML += htmlRow; 
+                        if(valSortie > 0) tSortieSumbar += 1; 
+                        tNaClSumbar += valNaCl; tCaOSumbar += valCaO; cSumbar++; 
+                        addStats(statsSumbar, info.nama, valSortie, valNaCl, valCaO); 
+                    }
                 });
-                function createTotalRow(s, n, c) { return `<tr class="row-total"><td>TOTAL</td><td>${s}</td><td>${n.toLocaleString()}</td><td>${c.toLocaleString()}</td><td>-</td></tr>`; }
+
+                function createTotalRow(s, n, c) { 
+                    return `<tr class="row-total"><td>TOTAL</td><td>${s}</td><td>${n.toLocaleString()}</td><td>${c.toLocaleString()}</td><td>-</td></tr>`; 
+                }
+
                 if(cAceh > 0) bodyAceh.innerHTML += createTotalRow(tSortieAceh, tNaClAceh, tCaOAceh); else bodyAceh.innerHTML = "<tr><td colspan='5' class='empty-row'>Belum ada data Aceh</td></tr>";
                 if(cSumut > 0) bodySumut.innerHTML += createTotalRow(tSortieSumut, tNaClSumut, tCaOSumut); else bodySumut.innerHTML = "<tr><td colspan='5' class='empty-row'>Belum ada data Sumut</td></tr>";
                 if(cSumbar > 0) bodySumbar.innerHTML += createTotalRow(tSortieSumbar, tNaClSumbar, tCaOSumbar); else bodySumbar.innerHTML = "<tr><td colspan='5' class='empty-row'>Belum ada data Sumbar</td></tr>";
+
                 updateChart("Aceh", "chartAceh", statsAceh);
                 updateChart("Sumut", "chartSumut", statsSumut);
                 updateChart("Sumbar", "chartSumbar", statsSumbar);
